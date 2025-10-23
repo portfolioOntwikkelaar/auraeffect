@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Blobs</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --blob-size: 600px;
+      --blob-speed: 8s;
+      --blob-blur: 80px;
+      --blob-opacity: 0.6;
+      --color-1: hsl(350, 95%, 58%);
+      --color-2: hsl(124, 95%, 60%);
+      --color-3: hsl(216, 100%, 60%);
+      --color-4: hsl(280, 95%, 65%);
+    }
+
+    html {
+      background: #000000;
+      background: radial-gradient(circle at 30% 50%, rgba(20, 20, 40, 1) 0%, rgba(0, 0, 0, 1) 100%);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridScroll 20s linear infinite;
+      opacity: 0.5;
+    }
+
+    @keyframes gridScroll {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    /* Subtle particle effects */
+    body::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 100px 100px;
+      animation: particleFloat 30s ease-in-out infinite;
+      opacity: 0.3;
+    }
+
+    @keyframes particleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 600px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    /* Main blob container with glass effect */
+    .blob-container {
+      position: relative;
+      width: 450px;
+      height: 450px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .blob-container:hover {
+      transform: scale(1.02);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 
+        0 12px 48px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* Blob wrapper for filter */
+    .blobs-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      filter: blur(var(--blob-blur)) contrast(1.8) brightness(1.1);
+      mix-blend-mode: screen;
+    }
+
+    .blob-item {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Individual blob animations */
+    .blob {
+      width: var(--blob-size);
+      height: calc(0.3 * var(--blob-size));
+      border-radius: 50%;
+      opacity: var(--blob-opacity);
+      position: absolute;
+      animation: blob-morph 8s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    .blob-item:nth-child(1) .blob {
+      background: linear-gradient(135deg, var(--color-1), var(--color-2));
+      animation-delay: 0s;
+      transform-origin: 50% 50%;
+    }
+
+    .blob-item:nth-child(2) .blob {
+      background: linear-gradient(135deg, var(--color-2), var(--color-3));
+      animation-delay: -2.5s;
+      transform-origin: 50% 50%;
+    }
+
+    .blob-item:nth-child(3) .blob {
+      background: linear-gradient(135deg, var(--color-3), var(--color-4));
+      animation-delay: -5s;
+      transform-origin: 50% 50%;
+    }
+
+    .blob-item:nth-child(4) .blob {
+      background: linear-gradient(135deg, var(--color-4), var(--color-1));
+      animation-delay: -7s;
+      transform-origin: 50% 50%;
+    }
+
+    @keyframes blob-morph {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(0.8, 1.8) rotate(0deg);
+      }
+      25% {
+        transform: translate(-30%, -50%) scale(1.2, 1.2) rotate(90deg);
+      }
+      50% {
+        transform: translate(-50%, -30%) scale(1.5, 0.7) rotate(180deg);
+      }
+      75% {
+        transform: translate(-70%, -50%) scale(0.9, 1.6) rotate(270deg);
+      }
+    }
+
+    /* Rotation effect */
+    .blob-rotate {
+      width: 100%;
+      height: 100%;
+      animation: blob-rotate 16s linear infinite;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+    }
+
+    .blob-item:nth-child(2) .blob-rotate {
+      animation-duration: 20s;
+      animation-direction: reverse;
+    }
+
+    .blob-item:nth-child(3) .blob-rotate {
+      animation-duration: 12s;
+    }
+
+    .blob-item:nth-child(4) .blob-rotate {
+      animation-duration: 18s;
+      animation-direction: reverse;
+    }
+
+    @keyframes blob-rotate {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* Content overlay */
+    .content {
+      position: relative;
+      z-index: 20;
+      text-align: center;
+      color: white;
+      padding: 40px;
+      pointer-events: none;
+    }
+
+    .content h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.7));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textFloat 3s ease-in-out infinite;
+    }
+
+    .content p {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 300;
+      animation: textFloat 3s ease-in-out infinite;
+      animation-delay: 0.2s;
+    }
+
+    @keyframes textFloat {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    /* Interactive controls */
+    .controls {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 30;
+    }
+
+    .control-btn {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .control-btn:active {
+      transform: translateY(0px);
+    }
+
+    /* Info badge */
+    .info-badge {
+      position: absolute;
+      top: 40px;
+      right: 40px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeInOut 4s ease-in-out infinite;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Speed variations */
+    .blob-container.slow {
+      --blob-speed: 12s;
+    }
+
+    .blob-container.fast {
+      --blob-speed: 4s;
+    }
+
+    .blob-container.paused .blob,
+    .blob-container.paused .blob-rotate {
+      animation-play-state: paused;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .blob-container {
+        width: 350px;
+        height: 350px;
+      }
+
+      .content h1 {
+        font-size: 2.5rem;
+      }
+
+      .content p {
+        font-size: 1rem;
+      }
+
+      .controls {
+        bottom: 20px;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .info-badge {
+        top: 20px;
+        right: 20px;
+        font-size: 10px;
+      }
+
+      :root {
+        --blob-size: 450px;
+        --blob-blur: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .blob-container {
+        width: 300px;
+        height: 300px;
+      }
+
+      .content h1 {
+        font-size: 2rem;
+      }
+
+      :root {
+        --blob-size: 350px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="info-badge">Interactive Blob Morph</div>
+
+  <div class="container">
+    <div class="blob-container" id="blobContainer">
+      <div class="blobs-wrapper">
+        <div class="blob-item">
+          <div class="blob-rotate">
+            <div class="blob"></div>
+          </div>
+        </div>
+        <div class="blob-item">
+          <div class="blob-rotate">
+            <div class="blob"></div>
+          </div>
+        </div>
+        <div class="blob-item">
+          <div class="blob-rotate">
+            <div class="blob"></div>
+          </div>
+        </div>
+        <div class="blob-item">
+          <div class="blob-rotate">
+            <div class="blob"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content">
+        <h1>Liquid Fusion</h1>
+        <p>Dynamic Morphing Blobs</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="control-btn" onclick="toggleSpeed('slow')">Traag</button>
+    <button class="control-btn" onclick="toggleSpeed('normal')">Normaal</button>
+    <button class="control-btn" onclick="toggleSpeed('fast')">Snel</button>
+    <button class="control-btn" onclick="togglePause()">Pauze/Play</button>
+  </div>
+
+  <script>
+    const container = document.getElementById('blobContainer');
+    let isPaused = false;
+
+    function toggleSpeed(speed) {
+      container.classList.remove('slow', 'fast');
+      if (speed !== 'normal') {
+        container.classList.add(speed);
+      }
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      if (isPaused) {
+        container.classList.add('paused');
+      } else {
+        container.classList.remove('paused');
+      }
+    }
+
+    // Mouse move effect for subtle parallax
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 20;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 20;
+    });
+
+    function animate() {
+      currentX += (mouseX - currentX) * 0.05;
+      currentY += (mouseY - currentY) * 0.05;
+      
+      container.style.transform = `translate(${currentX}px, ${currentY}px) scale(1)`;
+      
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Hover effect intensification
+    container.addEventListener('mouseenter', () => {
+      container.style.setProperty('--blob-opacity', '0.75');
+    });
+
+    container.addEventListener('mouseleave', () => {
+      container.style.setProperty('--blob-opacity', '0.6');
+    });
+  </script>
+</body>
+</html>
